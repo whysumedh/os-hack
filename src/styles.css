@@ -1,0 +1,186 @@
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff;
+    color: #333333;
+  }
+  
+  /* Container styling */
+  div {
+    max-width: 1200px; /* Increase the width */
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Form heading */
+  h1 {
+    color: #6a1b9a;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    color: #4a148c;
+    margin-bottom: 10px;
+  }
+  
+  /* Form labels */
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #333333;
+  }
+  
+  /* Form inputs */
+  input[type="text"],
+  input[type="number"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Checkbox inputs */
+  input[type="checkbox"] {
+    margin-right: 8px;
+  }
+  
+  /* Submit button */
+  button {
+    background-color: #6a1b9a;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px; /* Reduced margin-top */
+  }
+  
+  button:hover {
+    background-color: #4a148c;
+  }
+  
+  /* Response section */
+  h3 {
+    color: #6a1b9a;
+    margin-top: 15px; /* Reduced margin-top */
+  }
+  
+  ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  li {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  /* Image styling */
+  img {
+    display: block;
+    margin: 15px 0; /* Reduced margin */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  /* Brand palette container */
+  .brand-palette {
+    display: flex;
+    gap: 10px; /* Space between the inputs */
+    margin-top: 0px;
+    margin-bottom: 0px;
+  }
+  
+  /* Brand palette inputs */
+  .brand-palette input[type="text"] {
+    width: 120px; /* Increase input width */
+    padding: 8px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  
+  /* Container for the creative details and scoring sections */
+  .form-sections {
+    display: flex;
+    gap: 30px; /* Increase spacing between sections */
+    margin-top: 0px; /* Reduced margin-top */
+  }
+  
+  /* Individual section styling */
+  .form-section {
+    flex: 1;
+    padding: 15px; /* Add more padding for comfort */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  /* Section headings */
+  .form-section h2 {
+    margin-top: 0;
+    color: #4a148c;
+  }
+  
+  /* Center the submit button */
+  button[type="submit"] {
+    display: block;
+    margin: 15px auto; /* Reduced margin-top */
+  }
+  
+  /* Output response container */
+  .response-container {
+    display: flex;
+    gap: 20px; /* Space between response and scoring */
+    margin-top: 15px; /* Reduced margin-top */
+  }
+  
+  /* Individual response and scoring sections */
+  .response-section {
+    flex: 1;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .response-section h2 {
+    margin-top: 0;
+    color: #4a148c;
+  }
+  
+  .response-section ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .response-section li {
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+
+  /* Refine Global div Styling */
+div:not(.navbar):not(.navbar-container) {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
