@@ -1,44 +1,23 @@
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
+/* Navbar styles */
+.navbar {
     width: 100%;
-    padding: 10px 10%;
-    background: linear-gradient(to right,#6391a1, #a59f9f,#9c747f, #6391a1, #417c90, #114155);
+    background-color: #4a148c; /* Background color */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .navbar-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 10px 20px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    z-index: 100;
-}
-
-
-.logo{
-    font-size: 32px;
-    color: #ffff;
-    font-weight: 700;
-}
-
-.navbar a {
-    position: relative;
-    font-size: 18px;
-    font-weight: 500;
-    margin-left: 40px;
-    color: #ffff;
-}
-
-.navbar a::before{
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #fff;
-    transition: .3s;
-}
-
-.navbar a:hover::before{
-    width: 100%;
-}
-
-
+    justify-content: space-between;
+    color: #ffffff; /* Ensure text is white */
+  }
+  
+  .navbar h1 {
+    font-size: 24px;
+    margin: 0;
+    color: #ffffff; /* Explicitly set text color to white */
+  }
+  

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import CreativeDetailsForm from "../components/CreativeDetailsForm"
+import CreativeDetailsForm from "../components/CreativeDetailsForm";
 import ScoringCriteriaForm from "../components/ScoringCriteriaForm";
 import ResponseSection from "../components/ResponseSection";
 import ScoringSection from "../components/ScoringSection";
 import "../styles.css";
 
 const Form = () => {
-
   const [formData, setFormData] = useState({
     product_name: "",
     tagline: "",
@@ -27,6 +26,7 @@ const Form = () => {
   });
 
   const [responseData, setResponseData] = useState(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -59,6 +59,7 @@ const Form = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Show loading spinner
 
     const scoringCriteria = calculateScores();
 
@@ -93,6 +94,8 @@ const Form = () => {
       setResponseData(data);
     } catch (error) {
       console.error("Error fetching creative:", error);
+    } finally {
+      setLoading(false); // Hide loading spinner
     }
   };
 
@@ -110,8 +113,18 @@ const Form = () => {
             handleCriteriaChange={handleCriteriaChange}
           />
         </div>
-        <button type="submit">Submit</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Submitting..." : "Submit"}
+        </button>
       </form>
+
+      {loading && (
+        <div className="loading-screen">
+          <div className="spinner"></div>
+          <p>Loading...</p>
+        </div>
+      )}
+
       {responseData && (
         <div className="response-container">
           <ResponseSection creativeUrl={responseData.creative_url} />
