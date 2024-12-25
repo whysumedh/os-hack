@@ -4,6 +4,10 @@ This project enables users to generate customized posters by leveraging an API f
 
 ---
 
+## 🔗 Live Demo
+
+Check out the live version of this project here: [Live Demo](https://os-hack.vercel.app/)
+
 ## **Features**
 - **User Input**: Upload an image and provide additional details via a user-friendly web interface.
 - **Image Generation**: 
@@ -70,7 +74,3 @@ This project enables users to generate customized posters by leveraging an API f
 - Set up **Google Cloud Storage** and create a bucket.
 - Ensure the required APIs (Poster Generation API and Mask Generation API) are accessible.
 
-### **2. Clone the Repository**
-```bash
-git clone <repository_url>
-cd <repository_folder>
