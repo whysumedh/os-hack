@@ -1,6 +1,10 @@
 # Getting Started with Create React App
 
+Please Watch The Video Before Diving into the Code: https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt?usp=sharing
+
 Nascent Implementation With React Interface: https://os-hack.vercel.app/
+
+Streamlit UI App : Under Deployment
 ## Available Scripts
 
 In the project directory, you can run:
