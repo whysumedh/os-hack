@@ -75,14 +75,18 @@ All the API Codes have been uploaded to the repo with their respective folder na
 ## **Technologies Used**
 
 - **Frontend**:
-  - **Streamlit**: For building the web-based user interface.
+  - **Streamlit and Rect-Vercel**: For building the web-based user interface.
   
 - **Backend**:
-  - Custom APIs (Poster Generation & Mask Generation APIs).
+  - **Custom APIs**: Logo-API, Cloud Vision API
   - **Google Cloud Storage**: For storing and managing images.
+  - **Replicate** - Used for usage of several LLMs.
   
 - **Programming Language**:
   - Python.
+  - React/Js
+  - Docker
+  - HTML
 
 ---
 
@@ -92,5 +96,5 @@ All the API Codes have been uploaded to the repo with their respective folder na
 - Python 3.8 or higher.
 - A Google Cloud Platform (GCP) account.
 - Set up **Google Cloud Storage** and create a bucket.
-- Ensure the required APIs (Poster Generation API and Mask Generation API) are accessible.
+- Ensure the required API keys are available.
 
