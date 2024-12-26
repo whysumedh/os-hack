@@ -26,6 +26,8 @@ All the API Codes have been uploaded to the repo with their respective folder na
 
 ![image](https://github.com/user-attachments/assets/3b0ddf0c-a6f5-4652-a033-b8d635d1e982)
 
+- As discussed in the demo video, this is how an optimized product regeneration would be possible, (due to time and computational constraints we are trying to improve the below workflow model) essentially the inpainting will be done with an image prompt (instead of text description of the product image):
+![image](https://github.com/user-attachments/assets/3e69b48f-3427-479b-823b-e26fbcaacfc5)
 
 
 ## **Features**
