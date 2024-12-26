@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "savvy-math-444417-h9",
+  "private_key_id": "236dad3d5a17b1efd28d279cc616756b83474f45",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCrWV+0k3UyyDqK\nTxFtFgIcUTLXSAbrEZWDvMCtbOo87cMRNvg3fIhVm7wkP7NRJffd3MvavqOm3pxp\ndXjOePPy9v//7syZSWdDO0DTkd/3DQp47BkTethhP+T6jWPfgvJXmCLtHtx3DX/A\nyX3Q2+YmR8Bgj4GvfTNVyvSWugbLArFxDcw9fS3yRUAARnVRAZREEYKXTSH7bvCQ\nv3H1UNWNiLRvxrb8AK7eWRfQ20eoPGvpfQwpq3yVXosxQiF05CfnPMRaRm0SuYIR\nHOoRobLgkNTMbXau++nSyRUsqrvAepn38USUwP9ahL3eucPoQS9N52OwWxdLdgyc\nFcr3QhLnAgMBAAECggEAMPzBvF4F/Sk6d01IpZ/Lpa3fM6YfeDgUP1AI4+wGAbpV\n8Qd+qlpbneICxXhCu1n4BcF4tIaZQf1VyV6w1ZLF57oPEWwDqXVPZOy9SV9koPxk\n+JJDTwrpbtA2Fh2zJnUI9NsFbTZMAGtnEUZpxnr/zwTnbpPIl1Pbh9UY3Ti89W/N\nPE9+8ev1kTviVpf6CZEntAZXU60WnO6Ko6JBpIMJw62q7AeOBI+UwNSG7NXJ1xQJ\nQ8/Or4U4G3P6FIZIv5ywkIgJTUgldki6Wnmi++6hYOxtvQp9kIsswoJ7mttY0ADe\nQ5ajeGL87Ul6Oy66UjgXZRdeJOfO6+ooOIOnIHfNfQKBgQDdPUxmu2DIX6pDteJR\n6tsBJbpAAJ4psB8K+LHFPSl+V/Mk8gEr8FETZM2A1RMiCsBvaOJFU/JbzcUS9Vcm\nOdGpYd7Oe/Lz5g5BtAFV2sHcIJLANCrSGPq+OOZwoZCIKvahteC5FPp6pOxDcJln\n832EIXUqt/+jvq4uD4c2p90SUwKBgQDGRWJ2GLGshBwE/oynlTC6xD7MWOgXd2hq\nGNSJ0egCEjYRNqz4Iz1rf24mJCrQKSMkylEAoCaytrJui/4lpkR6gD+xI2vi1u4R\nvEBY3FA1Fisza1bq6OqPefOAZI8n6vEnw/fzTgIH5/yYSfJnMB5LfqklMGB7VbsS\naX+9PIwSnQKBgQChCRhOgr98uh198atNwywsFqEOKyT05SyDWOhU0CMewrfJwZlW\nuTLacfofd3jYw4i0z1w76FG1vv5ewVPxEA7rQsDh/VinbWIdMv/x1SxcpR0MaCxv\nBx2kTlh1zTQd2V/x7ygmr/1uPhN3N0OCZbqL7aqSMKIUNxwjjMv33ZHN3wKBgAQ+\nmgQDNVKHJX5p4KL5y6hD6UBAqv9NnBuhWnN03e2lbCjkLcHGJ1t0x+vjHFOGfe0c\ns606wHlU9e7t6kvuCktBEZv+MSITDdetWwdL+B+a0OPx6VNwFw1pQ/A8tt/Y5L7A\nMD+yLNL0gXDVLG5PFmbxWDemmHordKzJO2XWtPz1AoGBAMUMqbqLFGxIf0wXGXII\nqnUx3eZ6IzxbN14D1iJGtK8nSYF8oCp1dkZBHTc8wef1v4osQUSuo+/SjQZ27rhA\n75Q3UpmAZ4nCNuo/f86TlGDxWGiq63/1X2GRtmYYaqhY6RwZJGXACRK6/6ywsuXh\nmd5VAPRUiTD6jptGZuknAwmf\n-----END PRIVATE KEY-----\n",
+  "client_email": "savvy-math-444417-h9@appspot.gserviceaccount.com",
+  "client_id": "114255391391952475751",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/savvy-math-444417-h9%40appspot.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
