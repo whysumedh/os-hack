@@ -128,7 +128,7 @@ const Form = () => {
       {responseData && (
         <div className="response-container">
           <ResponseSection creativeUrl={responseData.creative_url} />
-          <ScoringSection scoring={responseData.scoring} />
+          <ScoringSection scoring={responseData.scoring.scoring} />
         </div>
       )}
     </div>
