@@ -9,14 +9,16 @@ This project enables users to generate customized posters by leveraging an API f
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 
 - As mentioned in the video we have updated our scoring method in the code.
-## 🔗 Hosted Links
+## 🔗 Hosted Apps
 
-- Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
-- Check out the Streamit App we have created for customizable image generation (Integrate your product and logos here) : https://adcraft.streamlit.app/
+- Check out the react API Interface we have created for this app: https://os-hack.vercel.app/
+- Check out the Streamit App we have created for customizable image generation (Integrate your product and logos here): https://adcraft.streamlit.app/
 
 ## 🔗 Hosted APIs
 
-- https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation according to the assignment given.
+All the API Codes have been uploaded to the repo with their respective folder names.
+
+- https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation according to the payload given.
 - https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
 - https://logo-integration-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 
