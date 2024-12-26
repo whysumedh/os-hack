@@ -19,6 +19,11 @@ https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 - https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
 - https://logo-integration-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 
+## Workflow and Architecture
+
+![image](https://github.com/user-attachments/assets/3b0ddf0c-a6f5-4652-a033-b8d635d1e982)
+
+
 
 ## **Features**
 - **User Input**: Upload an image and provide additional details via a user-friendly web interface.
