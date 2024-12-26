@@ -1,12 +1,14 @@
-# **Poster Generation and Masking with APIs and Google Cloud**
+# **AdCraft : Your Ads, Your Way, All Day!**
 
-This project enables users to generate customized posters by leveraging an API for creative generation, Google Cloud Storage for storing generated images, and another API for generating masks. It automates the process of creating posters by combining uploaded images, masks, and logos seamlessly.
+This project enables users to generate customized posters by leveraging an API for creative generation, Google Cloud Storage for storing generated images, and multiple models. It automates the process of creating posters by combining uploaded images, masks, and logos seamlessly.
 
 ---
+![image](https://github.com/user-attachments/assets/f6559450-a3f2-4a57-824a-dd51b6d1d108)
 
-## 🔗 Live Demo
+## 🔗 Hosted Links
 
-Check out the live version of this project here: [Live Demo](https://os-hack.vercel.app/)
+Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
+Check out the Streamit App we have created for customizable image generation : https://adcraft.streamlit.app/
 
 ## **Features**
 - **User Input**: Upload an image and provide additional details via a user-friendly web interface.
