@@ -21,6 +21,7 @@ All the API Codes have been uploaded to the repo with their respective folder na
 - https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation according to the payload given.
 - https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
 - https://logo-integration-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
+- We used several hosted models in replicate.com as APIs
 
 ## Workflow and Architecture
 
