@@ -12,7 +12,7 @@ https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 ## 🔗 Hosted Links
 
 - Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
-- Check out the Streamit App we have created for customizable image generation : https://adcraft.streamlit.app/
+- Check out the Streamit App we have created for customizable image generation (Integrate your product and logos here) : https://adcraft.streamlit.app/
 
 ## 🔗 Hosted APIs
 
