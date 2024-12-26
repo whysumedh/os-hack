@@ -7,8 +7,8 @@ This project enables users to generate customized posters by leveraging an API f
 
 ## 🔗 Hosted Links
 
-Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
-Check out the Streamit App we have created for customizable image generation : https://adcraft.streamlit.app/
+- Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
+- Check out the Streamit App we have created for customizable image generation : https://adcraft.streamlit.app/
 
 ## **Features**
 - **User Input**: Upload an image and provide additional details via a user-friendly web interface.
