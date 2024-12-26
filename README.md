@@ -5,6 +5,9 @@ This project enables users to generate customized posters by leveraging an API f
 ---
 ![image](https://github.com/user-attachments/assets/f6559450-a3f2-4a57-824a-dd51b6d1d108)
 
+## 🔗 Demo Video
+https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
+
 ## 🔗 Hosted Links
 
 - Check out the react API Interface we have created for this app : https://os-hack.vercel.app/
