@@ -1,0 +1,10 @@
+flask 
+pillow 
+requests 
+rembg 
+google-cloud-storage
+onnxruntime
+google-cloud-vision
+together
+webcolors
+replicate
