@@ -10,7 +10,6 @@ import webcolors
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "creds.json"
 os.environ["REPLICATE_API_TOKEN"] = st.secrets("REPLICATE_API_TOKEN")
-os.environ["REPLICATE_API_TOKEN"] = "r8_MwO6YuoiwJFsDXpEB1IB0BIeGKSiPTG1P9qC5"
 bucket_name = "os-api-assignment"
 replicate_client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
 
@@ -144,8 +143,8 @@ brand_palette = [
 approx_colors_with_hex = get_approx_color_name(brand_palette)
 color_description = ", ".join([f"{name}" for name, _ in approx_colors_with_hex])
 
-logo_url = st.sidebar.text_input("Logo URL", "https://example.com/logo.png")
-product_image_url = st.sidebar.text_input("Product Image URL", "https://example.com/product.png")
+logo_url = st.sidebar.text_input("Logo URL*", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDY6NRzSFWrjXopWsi84U_BFoE76x5X1Bb8A&s")
+product_image_url = st.sidebar.text_input("Product Image URL*", "https://erbaturglass.com/asset/resized/urunler/serumbottle/50ml/w_50ml3_m.jpg")
 
 aspect_ratio = st.sidebar.selectbox(
     "Select Aspect Ratio",
@@ -173,6 +172,8 @@ if "images" not in st.session_state:
     st.session_state.images = []
 if "selected_image_idx" not in st.session_state:
     st.session_state.selected_image_idx = None
+st.sidebar.write("*Note:* Please Include both Logo and Image URLs ")
+st.sidebar.write("*Note:* Default URLs are set to Loreal Logo and Generic Face Serum Product Image ")
 
 if st.sidebar.button("Generate Poster"):
     with st.spinner("Generating Images..."):
@@ -220,6 +221,7 @@ if st.session_state.images:
                 file_name = f"creative_{random.randint(1000, 9999)}.png"
                 creative_url = upload_to_gcs(buffer, file_name)
                 st.success(f"Image uploaded successfully: {creative_url}")
+                st.write("Detecting objects...")
 
                 payload = {"vision-api": "true", "image_url": creative_url}
                 response = requests.post(
@@ -237,6 +239,7 @@ if st.session_state.images:
                     
                     st.write(f"Selected Objects: {', '.join(selected_objects)}")
                     st.write(f"Mask Input - Image: {creative_url}, Prompt: {','.join(selected_objects)}")
+                    st.write("Masking the image...")
 
 
                     mask_output = replicate_client.run(
@@ -266,8 +269,10 @@ if st.session_state.images:
                             },
                         )
 
+                        st.write("Generating Product Description for the given Product image URL")
 
                         st.write("Product Description:", product_description_output)
+                        st.write("Inpainting the product")
 
                         mask_url=str(mask_url)
                         if isinstance(mask_url, str) and isinstance(creative_url, str):
