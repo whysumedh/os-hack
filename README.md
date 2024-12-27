@@ -3,7 +3,8 @@
 This project enables users to generate customized posters by leveraging an API for creative generation, Google Cloud Storage for storing generated images, and multiple models. It automates the process of creating posters by combining uploaded images, masks, and logos seamlessly.
 
 ---
-![image](https://github.com/user-attachments/assets/f6559450-a3f2-4a57-824a-dd51b6d1d108)
+![image](https://github.com/user-attachments/assets/fa764a1f-22b6-4646-862d-03cb9982f7ea)
+
 
 ## 🔗 Demo Video
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
