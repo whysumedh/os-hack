@@ -8,8 +8,7 @@ This project enables users to generate customized posters by leveraging an API f
 
 ## 🔗 Demo Video
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
-
-- As mentioned in the video we have updated our scoring method in the code.
+Sped up the video to 2x
 ## 🔗 Hosted Apps
 
 - Check out the react API Interface we have created for this app: https://os-hack.vercel.app/
