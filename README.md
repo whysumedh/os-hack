@@ -26,7 +26,8 @@ All the API Codes have been uploaded to the repo with their respective folder na
 
 ## Workflow and Architecture
 
-![OS-HACK](https://github.com/user-attachments/assets/110484be-70b6-4348-ba6b-f45dfda46770)
+![OS-HACK (1)](https://github.com/user-attachments/assets/96c85cf0-c83d-4a45-a859-55d9d9752fe1)
+
 
 
 As discussed in the demo video, this is how an optimized product regeneration would be possible, (due to time and computational constraints we could not implement this and trying to update the below workflow model) essentially the inpainting will be done with an image prompt (instead of text description of the product image):
