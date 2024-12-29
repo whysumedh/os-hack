@@ -11,7 +11,7 @@ This project enables users to generate customized posters by leveraging an API f
 
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 
-- We realized a solution to keep the given product image intact which is outpainting (opposite of inpainting shown in the video), generate definite poster around the given product. we will be integrating the same soon.
+
 ## 🔗 Hosted Apps
 
 - Check out the react API Interface we have created for this app: https://os-hack.vercel.app/
