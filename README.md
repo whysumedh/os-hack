@@ -39,7 +39,98 @@ As discussed in the demo video, this is how an optimized product regeneration wo
 ![image](https://github.com/user-attachments/assets/3e69b48f-3427-479b-823b-e26fbcaacfc5)
 
 
+## 🔗 Hosted APIs Payload and Response
 
+https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation and scoring of the creative according to the payload given.
+### Payload
+```
+{
+    "creative_details": {
+        "product_name": "GlowWell Skin Serum",
+        "tagline": "Radiance Redefined.",
+        "brand_palette": [
+            "#FFC107",
+            "#212121",
+            "#FFFFFF"
+        ],
+        "dimensions": {
+            "width": 1080,
+            "height": 1080
+        },
+        "cta_text": "Shop Now",
+        "logo_url": "https://images.seeklogo.com/logo-png/35/1/nykaa-logo-png_seeklogo-358073.png?v=1957301131966779968",
+        "product_image_url": "https://erbaturglass.com/asset/resized/urunler/serumbottle/50ml/w_50ml3_m.jpg"
+    },
+    "scoring_criteria": {
+        "background_foreground_separation": 50,
+        "brand_guideline_adherence": 50
+    }
+}
+```
+### Response
+```
+{
+    "creative_url": "https://storage.googleapis.com/os-api-assignment/processed_image_5911.png",
+    "metadata": {
+        "dimensions": {
+            "height": 1080,
+            "width": 1080
+        },
+        "file_size_kb": 441.42
+    },
+    "scoring": {
+        "scoring": {
+            "background_foreground_separation": 40,
+            "brand_guideline_adherence": 45,
+            "total_score": 85
+        }
+    },
+    "status": "success"
+}
+```
+https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
+### Payload
+```
+{
+    "vision-api":"true",
+    "image_url": "https://storage.googleapis.com/os-api-assignment/creative_8273.png"
+
+}
+```
+### Response
+```
+{
+    "message": "Objects processed with Vision API.",
+    "objects": [
+        {
+            "object_name": "Bottled and jarred packaged goods",
+            "url": "https://storage.googleapis.com/os-api-assignment/object_1_Bottled%20and%20jarred%20packaged%20goods_20241228003122.png"
+        },
+        {
+            "object_name": "Bottle",
+            "url": "https://storage.googleapis.com/os-api-assignment/object_2_Bottle_20241228003122.png"
+        }
+    ]
+}
+```
+
+https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
+### Payload
+```
+{
+    "base_image_url": "https://storage.googleapis.com/os-api-assignment/creative_3491.png",
+    "logo_url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ80MR6ixOUiLl9Fp-LbMvH93M4F7bx5Q1qSg&s",
+    "position": "top-right",
+    "scale_factor": 0.2,
+    "file_name": "processed_image.png"
+}
+```
+### Response
+```
+{
+    "public_url": "https://storage.googleapis.com/os-api-assignment/processed_image.png"
+}
+```
 
 
 
