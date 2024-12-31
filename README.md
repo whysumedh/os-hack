@@ -26,14 +26,14 @@ All the API Codes have been uploaded to the repo with their respective folder na
 - https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 - We used several hosted models in [replicate.com](https://replicate.com/) as APIs
 
-## Workflow and Architecture
+# Workflow and Architecture
 
-#Streamlit Interface
+## Streamlit Interface
 ![OS-HACK (2)](https://github.com/user-attachments/assets/d0a3537f-bfee-4d0e-aeef-5eff07c44aa9)
 
 
 
-# For Optimized Product Regeneration
+## For Optimized Product Regeneration
 As discussed in the demo video, this is how an optimized product regeneration would be possible, (due to time and computational constraints we could not implement this and trying to update the below workflow model) essentially the inpainting will be done with an image prompt (instead of text description of the product image):
 ![image](https://github.com/user-attachments/assets/3e69b48f-3427-479b-823b-e26fbcaacfc5)
 
