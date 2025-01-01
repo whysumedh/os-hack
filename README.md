@@ -7,7 +7,7 @@ This project enables users to generate customized posters by leveraging an API f
 
 
 ## 🔗 Demo Video
-- Sped up the video to 2x
+- Sped up the video to 1.5x
 
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 
