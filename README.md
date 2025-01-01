@@ -14,7 +14,7 @@ https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 
 ## 🔗 Hosted Apps
 
-- Check out the react API Interface we have created for this app: https://os-hack.vercel.app/
+- Check out the react API Interface we have created for this app: https://os-hack.vercel.app/ .(Please Make sure CORS policy is turned off before use) 
 - Check out the Streamit App we have created for customizable image generation (Integrate your product and logos here): https://adcraft.streamlit.app/
 
 ## 🔗 Hosted APIs
