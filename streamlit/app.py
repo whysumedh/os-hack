@@ -3,18 +3,17 @@ import os
 import io
 import replicate
 import requests
-from PIL import Image, ImageEnhance, ImageDraw, ImageFont
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont, ImageOps
 from io import BytesIO
 from google.cloud import storage
 import random
 import webcolors
 import base64
 from together import Together
+import numpy as np
+from rembg import remove
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "creds.json"
-os.environ["REPLICATE_API_TOKEN"] = st.secrets("REPLICATE_API_TOKEN")
-bucket_name = "os-api-assignment"
-replicate_client = replicate.Client(api_token=os.environ["REPLICATE_API_TOKEN"])
+
 
 def upload_to_gcs(image: BytesIO, file_name: str) -> str:
     """Uploads an image to Google Cloud Storage and returns its public URL."""
@@ -53,76 +52,6 @@ def get_approx_color_name(hex_codes):
         color_names.append((color_name, hex_code))
     return color_names
 
-def remove_background(image):
-    image = image.convert("RGBA")
-    
-    data = image.getdata()
-
-    new_data = []
-    for item in data:
-        if item[0] > 200 and item[1] > 200 and item[2] > 200:  
-            new_data.append((255, 255, 255, 0))  
-        elif item[0] < 50 and item[1] < 50 and item[2] < 50:  
-            new_data.append((255, 255, 255, 0)) 
-        else:
-            new_data.append(item)  
-
-    image.putdata(new_data)
-    return image
-def calculate_luminance(color):
-    r, g, b = color
-    return (0.299 * r + 0.587 * g + 0.114 * b) / 255
-
-def recolor_logo(logo, base_image, brand_palette):
-    logo_gray = logo.convert("L")
-    
-    threshold = 200  
-    logo_mask = logo_gray.point(lambda p: p > threshold and 255)  
-    
-    dominant_color = base_image.resize((1, 1)).getpixel((0, 0))[:3]
-    luminance = calculate_luminance(dominant_color)
-    
-    best_color = brand_palette[0] if luminance > 0.5 else brand_palette[1]  
-    
-    recolored_logo = logo.convert("RGBA")
-    datas = recolored_logo.getdata()
-    new_data = []
-    for item in datas:
-        if item[0] > 200 and item[1] > 200 and item[2] > 200: 
-            r, g, b = [int(best_color[i:i+2], 16) for i in range(1, len(best_color), 2)]
-            new_data.append((r, g, b, item[3]))  
-        else:
-            new_data.append(item)
-    
-    recolored_logo.putdata(new_data)
-    return recolored_logo
-
-def resize_logo(logo, base_image, scale_factor=0.2):  
-    max_width = int(base_image.width * scale_factor)
-    max_height = int(base_image.height * scale_factor)
-    logo = logo.resize((max_width, max_height), Image.Resampling.LANCZOS)  
-    return logo
-
-def paste_logo(base_image, logo, position):
-    positions = {
-        "top-left": (13, 13),
-        "top-right": (base_image.width - logo.width - 10, 10),
-        "bottom-left": (10, base_image.height - logo.height - 10),
-        "bottom-right": (base_image.width - logo.width - 10, base_image.height - logo.height - 10)
-    }
-    if position not in positions:
-        raise ValueError("Invalid position specified")
-    base_image.paste(logo, positions[position], logo if "A" in logo.getbands() else None)
-    return base_image
-
-def integrate_logo_with_image(base_image_url, logo_url, brand_palette, position, scale_factor=0.2):
-    base_image = download_image(base_image_url)
-    logo = download_image(logo_url)
-    logo = remove_background(logo)
-    logo = resize_logo(logo, base_image, scale_factor)
-    logo_recolored = recolor_logo(logo, base_image, brand_palette)
-    final_image = paste_logo(base_image, logo_recolored, position)
-    return final_image
 
 def edit_poster(image, contrast, brightness, sharpness, price, font_size, x_offset, y_offset, box_color, text_color, box_opacity, box_shape, corner_radius):
     if contrast != 1.0:
@@ -134,7 +63,7 @@ def edit_poster(image, contrast, brightness, sharpness, price, font_size, x_offs
 
     if price:
         draw = ImageDraw.Draw(image, "RGBA")
-        font = ImageFont.truetype("arial.ttf", font_size)  
+        font = ImageFont.truetype("Arial.ttf", font_size)  
         
         text_width = draw.textlength(price, font=font)
         text_height = font.size
@@ -171,37 +100,197 @@ def send_request_to_together(prompt, model, image_url):
     )
     return response
 
-st.set_page_config( page_title="AdCraft", page_icon="favicon_adcraft.jpg",layout="wide")
+def resize_to_fit(image, canvas_size):
+    """Resizes the image proportionally to fit within the canvas size."""
+    image.thumbnail(canvas_size, Image.LANCZOS)
+    return image
+
+def paste_on_canvas_and_upload(product_image_url: str, canvas_size=(1080, 1080)) -> str:
+    """Pastes the product image from the URL onto a canvas and uploads it to GCS."""
+    
+    response = requests.get(product_image_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch product image. Status code: {response.status_code}")
+    
+    product_image = Image.open(BytesIO(response.content))
+    
+    input_image_bytes = BytesIO()
+    product_image.save(input_image_bytes, format="PNG")
+    input_image_bytes.seek(0)
+    output_image_bytes = remove(input_image_bytes.getvalue())
+    product_image_no_bg = Image.open(BytesIO(output_image_bytes))
+    
+    product_image_resized = resize_to_fit(product_image_no_bg, canvas_size)
+    
+    canvas = Image.new('RGBA', canvas_size, (255, 255, 255, 255))
+    
+    product_width, product_height = product_image_resized.size
+    
+    x_offset = (canvas_size[0] - product_width) // 2
+    y_offset = (canvas_size[1] - product_height) // 2
+    position = (x_offset, y_offset)
+    
+    canvas.paste(product_image_resized, position, product_image_resized)
+    
+    img_byte_arr = BytesIO()
+    canvas.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
+    
+    file_name = f"canvas_image_{random.randint(1000, 9999)}.png"
+    
+    image_url = upload_to_gcs(img_byte_arr, file_name)
+    
+    return image_url
+
+
+
+def invert_mask_and_upload(image_url: str) -> str:
+    """
+    Inverts the mask from the given image URL and uploads it to GCS.
+    """
+    # Fetch the image from the URL
+    response = requests.get(image_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch image from URL. Status code: {response.status_code}")
+    
+    try:
+        # Load the image in grayscale
+        image = Image.open(BytesIO(response.content)).convert('L')
+    except Exception as e:
+        raise Exception(f"Failed to load the mask image. Error: {e}")
+    
+    # Invert the image
+    inverted_mask = ImageOps.invert(image)
+    
+    # Save the inverted image to a BytesIO buffer
+    buffer = BytesIO()
+    inverted_mask.save(buffer, format='PNG')
+    buffer.seek(0)  # Reset the buffer pointer for reading
+    
+    # Generate a random file name
+    file_name = f"inverted_mask_{random.randint(1000, 9999)}.png"
+    
+    # Upload the image to GCS
+    inverted_mask_url = upload_to_gcs(buffer, file_name)
+    
+    return inverted_mask_url
+
+
+def outpainting_workflow(product_image_url: str, product_name: str, tagline: str, cta_text: str, color_description: str):
+    vision_payload = {
+        "vision-api": "true",
+        "image_url": product_image_url,
+    }
+    vision_response = requests.post("https://flask-api-141459457956.us-central1.run.app/remove-background", json=vision_payload)
+    if vision_response.status_code != 200:
+        raise Exception(f"Vision API call failed. Status code: {vision_response.status_code}")
+    
+    vision_data = vision_response.json()
+    objects = vision_data.get("objects", [])
+    if not objects:
+        text_prompt = "bottle"
+    else:
+        text_prompt = ",".join([obj["object_name"] for obj in objects[:2]])
+    
+    canvas_url = paste_on_canvas_and_upload(product_image_url)
+    st.image(canvas_url,caption="Product Pasted on Canvas",width=800)
+    segmentation_output = replicate.run(
+        "tmappdev/lang-segment-anything:891411c38a6ed2d44c004b7b9e44217df7a5b07848f29ddefd2e28bc7cbf93bc",
+        input={"image": canvas_url, "text_prompt": text_prompt},
+    )
+    mask_url = segmentation_output
+    
+    inverted_mask_url = invert_mask_and_upload(mask_url)
+    st.image(inverted_mask_url,caption="Inverted Mask for Outpainting",width=800)
+
+    
+    prompt = (
+        f"A high-quality product advertisement for '{product_name}' with the tagline '{tagline}'. "
+        f"Features a sleek design, emphasizing elegance and simplicity. Include a call-to-action button labeled '{cta_text}'. "
+        f"Use a color palette inspired by {color_description}. Focus on elegance and a professional look."
+    )
+    
+    inpainting_output = replicate.run(
+        "zsxkib/flux-dev-inpainting:ca8350ff748d56b3ebbd5a12bd3436c2214262a4ff8619de9890ecc41751a008",
+        input={
+            "mask": inverted_mask_url,
+            "image": canvas_url,
+            "width": 1024,
+            "height": 1024,
+            "prompt": prompt,
+            "strength": 1,
+            "num_outputs": 1,
+            "output_format": "jpg",
+            "guidance_scale": 7,
+            "output_quality": 90, 
+            "num_inference_steps": 30,
+        },
+    )
+    for item in inpainting_output:
+        return item
+
+def integrate_logo(base_image_url: str, logo_url: str, position: str = "top-right", scale_factor: float = 0.2) -> str:
+
+    api_url = "https://logo-api-141459457956.us-central1.run.app/integrate_logo"
+    
+    file_name = f"processed_image_{random.randint(1000, 9999)}.png"
+    
+    payload = {
+        "base_image_url": base_image_url,
+        "logo_url": logo_url,
+        "position": position,
+        "scale_factor": scale_factor,
+        "file_name": file_name
+    }
+    
+    try:
+        response = requests.post(api_url, json=payload)
+        
+        response.raise_for_status()
+        
+        response_data = response.json()
+        
+        public_url = response_data.get("public_url")
+        if not public_url:
+            raise ValueError("Public URL not found in the API response.")
+        
+        return public_url
+    except requests.exceptions.RequestException as e:
+        raise Exception(f"Error occurred while calling the logo API: {e}")
+    except ValueError as ve:
+        raise Exception(f"Error in response data: {ve}")
+
+st.set_page_config( page_title="AdCraft", page_icon="favfav.jpg",layout="wide")
 st.title("AdCraft")
-tab1, tab2, tab3=st.tabs(["Creative Generation", "Edit Creative", "Modify the Creative with AI"])
+tab1, tab2, tab3, tab4=st.tabs(["Creative Generation - Inpainting","Creative Generation - Outpainting", "Edit Creative", "Modify the Creative with AI"])
+
+st.sidebar.image("adcraft.jpeg", use_container_width=True)
+st.sidebar.header("Input Details")
+logo_url = st.sidebar.text_input("Logo URL*", "https://images.seeklogo.com/logo-png/35/1/nykaa-logo-png_seeklogo-358073.png?v=1957301131966779968")
+st.session_state["logo_url_op"]=logo_url
+product_image_url = st.sidebar.text_input("Product Image URL*", "https://erbaturglass.com/asset/resized/urunler/serumbottle/50ml/w_50ml3_m.jpg")
+st.session_state["product_url_op"]=product_image_url
+st.sidebar.write("*Note:* Please Include both Logo and Image URLs ")
+st.sidebar.write("*Note:* Default URLs are set to Nykaa Logo and Generic Face Serum Product Image ")
+st.sidebar.write("*Inpainting* - Descripts the given product image and regenerates the product from the user chosen poster ")
+st.sidebar.write("*Outpainting* - Keeps the product image intact and generates background with the given prompt ")
+endpoint="https://creative-api-141459457956.us-central1.run.app/generate_creative"
+st.sidebar.write("To use this as API, use this [endpoint](%s)"%endpoint)
+interface="https://os-hack.vercel.app/"
+st.sidebar.write("Or use the API interface [here](%s)"%interface)
+doc="https://github.com/whysumedh/os-hack/blob/main/README.md"
+st.sidebar.write("Check the documentation [here](%s)"%doc)
+st.sidebar.write("Made to Win by Team RAG2riches")
+
 
 with tab1:
-    st.sidebar.image("adcraft.jpeg", use_container_width=True)
-    st.sidebar.header("Input Details")
 
     product_name = st.text_input("Product Name", "GlowWell Skin Serum")
     tagline = st.text_input("Tagline", "Radiance Redefined.")
     cta_text = st.text_input("Call-to-Action Text", "Shop Now")
-
-    st.subheader("Brand Palette (Pick up to 5 colors)")
-    col1, col2, col3, col4, col5 = st.columns(5)
-
-    brand_palette = [
-        col1.color_picker("Color 1", "#FFFFFF"),
-        col2.color_picker("Color 2", "#FFFFFF"),
-        col3.color_picker("Color 3", "#FFFFFF"),
-        col4.color_picker("Color 4", "#FFFFFF"),
-        col5.color_picker("Color 5", "#FFFFFF")
-    ]
-    approx_colors_with_hex = get_approx_color_name(brand_palette)
-    color_description = ", ".join([f"{name}" for name, _ in approx_colors_with_hex])
-
-    logo_url = st.sidebar.text_input("Logo URL*", "https://i.pinimg.com/originals/3d/36/c4/3d36c4b13e125ae1bbb4f818ab2c3e80.jpg")
-    product_image_url = st.sidebar.text_input("Product Image URL*", "https://erbaturglass.com/asset/resized/urunler/serumbottle/50ml/w_50ml3_m.jpg")
-
-    aspect_ratio = st.sidebar.selectbox(
-        "Select Aspect Ratio",
-        ["1:1", "16:9", "21:9", "3:2", "2:3", "4:5", "5:4", "3:4", "4:3", "9:16", "9:21"]
+    aspect_ratio = st.selectbox(
+    "Select Aspect Ratio",
+    ["1:1", "16:9", "21:9", "3:2", "2:3", "4:5", "5:4", "3:4", "4:3", "9:16", "9:21"]
     )
 
     aspect_ratio_dict = {
@@ -218,19 +307,29 @@ with tab1:
         "9:21": (9, 21),
     }
 
-    width, height = aspect_ratio_dict[aspect_ratio]
+    if aspect_ratio:
+        width, height = aspect_ratio_dict[aspect_ratio]
 
+    st.subheader("Brand Palette (Pick up to 5 colors)")
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    brand_palette = [
+        col1.color_picker("Color 1", "#FFFFFF"),
+        col2.color_picker("Color 2", "#FFFFFF"),
+        col3.color_picker("Color 3", "#FFFFFF"),
+        col4.color_picker("Color 4", "#FFFFFF"),
+        col5.color_picker("Color 5", "#FFFFFF")
+    ]
+    approx_colors_with_hex = get_approx_color_name(brand_palette)
+    color_description = ", ".join([f"{name}" for name, _ in approx_colors_with_hex])
+    logo_position = st.radio("Select Logo Position",options=["top-right", "top-left", "bottom-left", "bottom-right"])
 
     if "images" not in st.session_state:
         st.session_state.images = []
     if "selected_image_idx" not in st.session_state:
         st.session_state.selected_image_idx = None
-    st.sidebar.write("*Note:* Please Include both Logo and Image URLs ")
-    st.sidebar.write("*Note:* Default URLs are set to Loreal Logo and Generic Face Serum Product Image ")
-    st.sidebar.write("Made to win by Team RAG2riches")
-    
 
-    if st.sidebar.button("Generate Poster"):
+    if st.button("Generate"):
         with st.spinner("Generating Images..."):
             try:
                 prompt = (
@@ -356,7 +455,7 @@ with tab1:
                                 response.raise_for_status()
                                 inpainted_image = Image.open(BytesIO(response.content))
 
-                                st.image(inpainted_image, caption="Final Image with Inpainting")
+                                st.image(inpainted_image, caption="Final Image with Inpainting", width=800)
                                 buffer = BytesIO()
                                 inpainted_image.save(buffer, format="PNG")
                                 buffer.seek(0)
@@ -367,33 +466,28 @@ with tab1:
                                 st.session_state["logo_url"] = inpainted_image_url
                                 if "logo_url" in st.session_state:
                                     st.write("Integrating logo with the inpainted image...")
-                                    position = st.radio(
-                                    "Select Logo Position",
-                                    options=["top-right", "top-left", "bottom-left", "bottom-right"]
-                                    )
                                     logo_integration_payload = {
                                         "base_image_url": st.session_state["logo_url"],
                                         "logo_url": logo_url,
                                         "brand_palette": brand_palette,
-                                        "position": position, 
-                                        "scale_factor": 0.2,
+                                        "position": logo_position, 
+                                        "scale_factor": 0.3,
                                         "file_name": f"final_{random.randint(1000, 9999)}.png"
                                     }
-                                    if position:
-                                        try:
-                                            response = requests.post("https://logo-api-141459457956.us-central1.run.app/integrate_logo", json=logo_integration_payload)
-                                            response.raise_for_status()
-                                            logo_integration_result = response.json()
+                                    try:
+                                        response = requests.post("https://logo-api-141459457956.us-central1.run.app/integrate_logo", json=logo_integration_payload)
+                                        response.raise_for_status()
+                                        logo_integration_result = response.json()
 
-                                            if "public_url" in logo_integration_result:
-                                                final_poster_url = logo_integration_result["public_url"]
-                                                st.image(final_poster_url, caption="Final Advertisement Poster with Logo")
-                                                st.success(f"Final poster uploaded successfully: {final_poster_url}")
-                                                st.session_state["final_url"] = final_poster_url
-                                            else:
-                                                st.error("Error: No URL found in the logo API response.")
-                                        except Exception as e:
-                                            st.error(f"Error during logo integration: {str(e)}")
+                                        if "public_url" in logo_integration_result:
+                                            final_poster_url = logo_integration_result["public_url"]
+                                            st.image(final_poster_url, caption="Final Ad Creative with Logo", width = 800)
+                                            st.success(f"Final poster uploaded successfully: {final_poster_url}")
+                                            st.session_state["final_url"] = final_poster_url
+                                        else:
+                                            st.error("Error: No URL found in the logo API response.")
+                                    except Exception as e:
+                                        st.error(f"Error during logo integration: {str(e)}")
                             else:
                                 st.error("Error in generating inpainted image")
                         else:
@@ -403,6 +497,46 @@ with tab1:
 
 
 with tab2:
+
+    product_name_op = st.text_input("Name of the Product", "GlowWell Skin Serum")
+    tagline_op = st.text_input("Product Tagline", "Radiance Redefined.")
+    cta_text_op = st.text_input("Call to Action Text", "Shop Now")
+    col1,col2=st.columns(2)
+    with col1:
+        height=st.number_input("Height",1024)
+    with col2:
+        width=st.number_input("Width",1024)
+
+    
+
+    st.subheader("Choose Brand Palette")
+    col1, col2, col3, col4, col5 = st.columns(5)
+
+    brand_palette_op = [
+        col1.color_picker("Colour 1", "#FFFFFF"),
+        col2.color_picker("Colour 2", "#FFFFFF"),
+        col3.color_picker("Colour 3", "#FFFFFF")
+    ]
+    approx_colors_with_hex_op = get_approx_color_name(brand_palette_op)
+    color_description_op = ", ".join([f"{name}" for name, _ in approx_colors_with_hex_op])
+    st.write(color_description_op)
+    logo_position_op = st.radio("Choose Logo Position",options=["top-right", "top-left", "bottom-left", "bottom-right"])
+    if "logo_url_op" in st.session_state:
+        logo_url_op=st.session_state["logo_url_op"]
+    if "product_url_op" in st.session_state:
+        product_url_op=st.session_state["product_url_op"]
+    
+    if st.button("Generate Creative"):
+        response_op = outpainting_workflow( product_url_op, product_name_op, tagline_op, cta_text_op, color_description_op )
+        st.image(response_op.url,caption="Outpainted Poster with Intact Product Image",width=800)
+        final_logo_url= integrate_logo(response_op.url, logo_url_op, logo_position_op, scale_factor = 0.2)
+        st.image(final_logo_url, caption="Final Creative With Logo", width=800)
+        st.session_state["final_url"] = final_logo_url
+
+
+
+
+with tab3:
     st.header("Creative Editor")
     uploaded_file = st.file_uploader("Upload an Creative", type=["jpg", "jpeg", "png"])
     image_url = st.text_input("Or, provide an image URL")
@@ -463,7 +597,7 @@ with tab2:
                 mime="image/png"
             )
 
-with tab3:
+with tab4:
     if "final_url" in st.session_state and st.session_state["final_url"]:
         image_url = st.session_state["final_url"]
 
@@ -485,7 +619,7 @@ with tab3:
 
                 modified_image_url = result.data[0].url
 
-                st.image(modified_image_url, caption="Modified Image", use_container_width=True)
+                st.image(modified_image_url, caption="Modified Image", width=800)
 
                 st.download_button(
                     label="Download Modified Image",
@@ -497,6 +631,3 @@ with tab3:
                 st.error(f"An error occurred: {e}")
     else:
         st.warning("No image URL found in session state. Please upload an image in the previous tab.")
-
-                    st.error("Error in processing background removal")
-
