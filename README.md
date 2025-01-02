@@ -5,12 +5,21 @@ This project enables users to generate customized posters by leveraging an API f
 ---
 ![adcraft](https://github.com/user-attachments/assets/f22c192e-92f8-44cf-a2d1-2213b943f79f)
 
+---
+
+## Table of Contents
+1. [Demo Video](#demo-video)
+2. [Hosted Apps](#hosted-apps)
+3. [Hosted APIs](#hosted-apis)
+4. [Workflow and Architecture](#workflow-and-architecture)
+5. [Hosted APIs Payload and Response](#hosted-apis-payload-and-response)
+6. [Features](#features)
+7. [Technologies Used](#technologies-used)
+8. [Installation and Setup](#installation-and-setup)
 
 ## 🔗 Demo Video
 - Sped up the video to 1.5x
-
 https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
-
 
 ## 🔗 Hosted Apps
 
@@ -26,15 +35,15 @@ All the API Codes have been uploaded to the repo with their respective folder na
 - https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 - We used several hosted models in [replicate.com](https://replicate.com/) and [together.ai](https://www.together.ai/) as APIs
 
-# Workflow and Architecture
+## Workflow and Architecture
 
-## Streamlit Interface
+### Streamlit Interface
 ![OS-HACK (2)](https://github.com/user-attachments/assets/d0a3537f-bfee-4d0e-aeef-5eff07c44aa9)
 
-## Creative Generation API
+### Creative Generation API
 ![api-workflow](https://github.com/user-attachments/assets/afac8adc-7966-4d34-9887-2296135174b7)
 
-## For Optimized Product Regeneration
+### For Optimized Product Regeneration
 As discussed in the demo video, this is how an optimized product regeneration would be possible, (due to time and computational constraints we could not implement this and trying to update the below workflow model) essentially the inpainting will be done with an image prompt (instead of text description of the product image):
 ![image](https://github.com/user-attachments/assets/3e69b48f-3427-479b-823b-e26fbcaacfc5)
 
@@ -98,6 +107,7 @@ https://flask-api-141459457956.us-central1.run.app/remove-background - To use cl
 }
 ```
 ### Response
+
 ```
 {
     "message": "Objects processed with Vision API.",
@@ -113,6 +123,8 @@ https://flask-api-141459457956.us-central1.run.app/remove-background - To use cl
     ]
 }
 ```
+
+- Defaults to 'Bottle' (For GlowWell Skin Serum) ,if Cloud Vision API does not or could not detect any objects.
 
 https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 ### Payload
@@ -137,56 +149,30 @@ https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow a
 ## **Features**
 - **User Input**: Upload an image and provide additional details via a user-friendly web interface.
 - **Image Generation**: 
-  - The uploaded image and details are sent to an API that generates a creative poster.
+  - The uploaded image and details are sent to an API that generates a creative poster. Creative generation using either Outpainting or Inpainting using the models in [replicate.com](https://replicate.com/).
+- **Object Detection for Masking**:
+  - For the given poster image objects are detected using Google Cloud Vision API, if no objects are detected, the detected objects are defaulted to 'Bottle' (For GlowWell Skin Serum)
 - **Cloud Storage**: 
   - The generated poster is uploaded to **Google Cloud Storage**.
   - The **image URL** is retrieved from Google Cloud.
 - **Mask Generation**:
-  - The image URL is sent to another API to generate a mask for the poster.
+  - The image URL is sent to lang-segment-anything API hosted in [replicate.com](https://replicate.com/) to generate a mask for the poster.
   - The mask is used to refine and customize the generated poster.
 - **Logo and Mask Integration**:
   - The mask is applied to the generated poster.
-  - A logo is added to the masked poster to finalize the design.
-- **Output**:
-  - The final masked and logo-integrated poster is displayed and/or available for download.
-
----
-
-## **Workflow**
-
-1. **User Input**:
-   - The user uploads an image and provides additional details via the Streamlit app.
-
-2. **API for Poster Generation**:
-   - The uploaded image and user-provided data are sent to a **Poster Generation API**.
-   - The API generates a creative poster.
-
-3. **Google Cloud Storage**:
-   - The generated poster is uploaded to a **Google Cloud Storage bucket**.
-   - The **public URL** of the uploaded poster is retrieved.
-
-4. **Mask Generation API**:
-   - The poster URL is sent to a **Mask Generation API**.
-   - The API returns a mask for the poster.
-
-5. **Final Poster Creation**:
-   - The mask is applied to the poster.
-   - A logo is added to the masked poster to finalize the design.
-
-6. **Display/Download**:
-   - The final poster is displayed on the app and can be downloaded by the user.
+  - A logo is added to the masked poster to finalize the design using the custom built logo integration API.
 
 ---
 
 ## **Technologies Used**
 
 - **Frontend**:
-  - **Streamlit and Rect-Vercel**: For building the web-based user interface.
+  - **Streamlit and React-Vercel**: For building the web-based user interface.
   
 - **Backend**:
   - **Custom APIs**: Logo-API, Cloud Vision API
   - **Google Cloud Storage**: For storing and managing images.
-  - **Replicate** - Used for usage of several LLMs.
+  - **Replicate** and **Together.ai** - Used for usage of several LLMs.
   
 - **Programming Language**:
   - Python.
