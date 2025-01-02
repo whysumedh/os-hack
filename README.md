@@ -30,9 +30,9 @@ https://drive.google.com/drive/folders/1A1vtRV-iDrYIjKYmGxwpRpCNWGjBOHEt
 
 All the API Codes have been uploaded to the repo with their respective folder names.
 
-- https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation and scoring of the creative according to the payload given.
-- https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
-- https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
+- Creative Generation API - https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation and scoring of the creative according to the payload given.
+- Cloud Vision API - https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
+- Logo Integration API - https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 - We used several hosted models in [replicate.com](https://replicate.com/) and [together.ai](https://www.together.ai/) as APIs
 
 ## Workflow and Architecture
@@ -50,7 +50,7 @@ As discussed in the demo video, this is how an optimized product regeneration wo
 
 ## 🔗 Hosted APIs Payload and Response
 
-https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation and scoring of the creative according to the payload given.
+Creative Generation API - https://creative-api-141459457956.us-central1.run.app/generate_creative - For creative generation and scoring of the creative according to the payload given.
 ### Payload
 ```
 {
@@ -97,7 +97,7 @@ https://creative-api-141459457956.us-central1.run.app/generate_creative - For cr
     "status": "success"
 }
 ```
-https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
+Cloud Vision API - https://flask-api-141459457956.us-central1.run.app/remove-background - To use cloud vision API for object detection for masking of images
 ### Payload
 ```
 {
@@ -126,7 +126,7 @@ https://flask-api-141459457956.us-central1.run.app/remove-background - To use cl
 
 - Defaults to 'Bottle' (For GlowWell Skin Serum) ,if Cloud Vision API does not or could not detect any objects.
 
-https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
+Logo Integration API - https://logo-api-141459457956.us-central1.run.app/integrate_logo - Uses Pillow and other libraries to inteagrate logo with a base image according to user preference.
 ### Payload
 ```
 {
