@@ -65,6 +65,9 @@ const CreativeDetailsForm = ({ formData, handleInputChange, handleArrayChange })
           onChange={handleInputChange}
         />
       </label>
+      <p style={{ fontSize: "12px", color: "#555", marginTop: "8px" }}>
+      Note: Dimensions should be in multiples of 4.
+      </p>
 
       {/* CTA Text */}
       <label>
