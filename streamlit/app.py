@@ -8,12 +8,20 @@ from io import BytesIO
 from google.cloud import storage
 import random
 import webcolors
-import base64
 from together import Together
-import numpy as np
 from rembg import remove
+from serpapi import GoogleSearch
+from opencage.geocoder import OpenCageGeocode
+from streamlit_folium import st_folium
+import folium
+from datetime import datetime
+import plotly.graph_objects as go
 
-
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "JSONFILE"
+TAPI="**"
+bucket_name = "os-api-assignment"
+OPENCAGE_API_KEY = "**"
+geocoder = OpenCageGeocode(OPENCAGE_API_KEY)
 
 def upload_to_gcs(image: BytesIO, file_name: str) -> str:
     """Uploads an image to Google Cloud Storage and returns its public URL."""
@@ -51,6 +59,165 @@ def get_approx_color_name(hex_codes):
         color_name = closest_colour(rgb)
         color_names.append((color_name, hex_code))
     return color_names
+
+def fetch_trends_data(query, date_range):
+    params = {
+        "engine": "google_trends",
+        "q": query, 
+        "data_type": "TIMESERIES", 
+        "date": date_range, 
+        "api_key": "f3c99f2475d6e0b915a0eeda1b9e917436016b1c4048fb6167dce80a863a7b02"  
+    }
+    search = GoogleSearch(params)
+    results = search.get_dict()
+    return results.get("interest_over_time", {}).get("timeline_data", [])
+
+def process_timeseries_data(timeseries_data):
+    query_data = {}
+    for entry in timeseries_data:
+        for value in entry['values']:
+            query = value['query']
+            extracted_value = value['extracted_value']
+            timestamp = entry['timestamp']
+
+            if query not in query_data:
+                query_data[query] = {"timestamps": [], "values": []}
+            query_data[query]["timestamps"].append(int(timestamp))
+            query_data[query]["values"].append(int(extracted_value))
+    return query_data
+
+def fetch_regional_data(query):
+    params = {
+        "engine": "google_trends",
+        "q": query,
+        "geo": "IN",
+        "region": "REGION",
+        "data_type": "GEO_MAP_0",
+        "api_key": "f3c99f2475d6e0b915a0eeda1b9e917436016b1c4048fb6167dce80a863a7b02",
+    }
+    search = GoogleSearch(params)
+    results = search.get_dict()
+    return results.get("interest_by_region", [])
+
+def trends_fetcher(query):
+    day_data = fetch_trends_data(query, "now 1-d")
+    week_data = fetch_trends_data(query, "now 7-d")
+    regional_data = fetch_regional_data(query)
+
+    if day_data and week_data:
+        day_query_data = process_timeseries_data(day_data)
+
+        week_query_data = process_timeseries_data(week_data)
+
+        best_times = []
+        for query, data in day_query_data.items():
+            timestamps = data["timestamps"]
+            values = data["values"]
+            readable_times = [datetime.fromtimestamp(ts) for ts in timestamps]
+
+            peak_value = max(values)
+            peak_index = values.index(peak_value)
+            peak_time = readable_times[peak_index]
+            best_times.append((query, peak_value, peak_time))
+
+        best_days = []
+        for query, data in week_query_data.items():
+            timestamps = data["timestamps"]
+            values = data["values"]
+            readable_times = [datetime.fromtimestamp(ts) for ts in timestamps]
+
+            peak_value = max(values)
+            peak_index = values.index(peak_value)
+            peak_time = readable_times[peak_index]
+            peak_day = peak_time.strftime('%A')
+            best_days.append((query, peak_value, peak_day))
+
+        st.subheader("Best Time to Post the Ad")
+        for i, query in enumerate(day_query_data.keys()):
+            best_time_of_day = best_times[i][2].strftime('%I:%M %p')  # Format time
+            best_value_of_day = best_times[i][1]
+            best_day_of_week = best_days[i][2]
+            best_value_of_week = best_days[i][1]
+
+            st.write(f"**Query: {query}**")
+            st.write(f"- Best Time of Day: {best_time_of_day} (Peak Value: {best_value_of_day})")
+            st.write(f"- Best Day of the Week: {best_day_of_week} (Peak Value: {best_value_of_week})")
+
+        fig_day = go.Figure()
+        for query, data in day_query_data.items():
+            timestamps = data["timestamps"]
+            values = data["values"]
+            readable_times = [datetime.fromtimestamp(ts) for ts in timestamps]
+
+            fig_day.add_trace(go.Scatter(
+                x=readable_times,
+                y=values,
+                mode='lines+markers',
+                name=query
+            ))
+        fig_day.update_layout(
+            title="Interest Over Time (Past Day)",
+            xaxis_title="Time",
+            yaxis_title="Interest Value",
+            legend_title="Queries",
+            template="plotly_white",
+            hovermode="x unified"
+        )
+
+        fig_week = go.Figure()
+        for query, data in week_query_data.items():
+            timestamps = data["timestamps"]
+            values = data["values"]
+            readable_times = [datetime.fromtimestamp(ts) for ts in timestamps]
+
+            fig_week.add_trace(go.Scatter(
+                x=readable_times,
+                y=values,
+                mode='lines+markers',
+                name=query
+            ))
+        fig_week.update_layout(
+            title="Interest Over Time (Past Week)",
+            xaxis_title="Time",
+            yaxis_title="Interest Value",
+            legend_title="Queries",
+            template="plotly_white",
+            hovermode="x unified"
+        )
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.subheader("Past Day Trends")
+            st.plotly_chart(fig_day, use_container_width=True)
+
+        with col2:
+            st.subheader("Past Week Trends")
+            st.plotly_chart(fig_week, use_container_width=True)
+
+    if regional_data:
+        st.subheader("Top 5 Regions")
+        regions = sorted(regional_data, key=lambda x: x["extracted_value"], reverse=True)[:5]
+
+        m = folium.Map(location=[23.5937, 80.9629], zoom_start=5, tiles="cartodbpositron")
+
+        for region in regions:
+            location_name = region["location"]
+            value = region["extracted_value"]
+
+            geo_data = geocoder.geocode(location_name + ", India")
+            if geo_data:
+                lat, lng = geo_data[0]["geometry"]["lat"], geo_data[0]["geometry"]["lng"]
+
+                folium.Marker(
+                    location=[lat, lng],
+                    tooltip=f"{location_name}: {value}",
+                    icon=folium.Icon(color="blue"),
+                ).add_to(m)
+
+        st_folium(m, width=800, height=600)
+    else:
+        st.warning("No regional data found for the selected query.")
 
 
 def edit_poster(image, contrast, brightness, sharpness, price, font_size, x_offset, y_offset, box_color, text_color, box_opacity, box_shape, corner_radius):
@@ -148,29 +315,23 @@ def invert_mask_and_upload(image_url: str) -> str:
     """
     Inverts the mask from the given image URL and uploads it to GCS.
     """
-    # Fetch the image from the URL
     response = requests.get(image_url)
     if response.status_code != 200:
         raise Exception(f"Failed to fetch image from URL. Status code: {response.status_code}")
     
     try:
-        # Load the image in grayscale
         image = Image.open(BytesIO(response.content)).convert('L')
     except Exception as e:
         raise Exception(f"Failed to load the mask image. Error: {e}")
     
-    # Invert the image
     inverted_mask = ImageOps.invert(image)
     
-    # Save the inverted image to a BytesIO buffer
     buffer = BytesIO()
     inverted_mask.save(buffer, format='PNG')
-    buffer.seek(0)  # Reset the buffer pointer for reading
+    buffer.seek(0) 
     
-    # Generate a random file name
     file_name = f"inverted_mask_{random.randint(1000, 9999)}.png"
     
-    # Upload the image to GCS
     inverted_mask_url = upload_to_gcs(buffer, file_name)
     
     return inverted_mask_url
@@ -245,15 +406,11 @@ def integrate_logo(base_image_url: str, logo_url: str, position: str = "top-righ
     
     try:
         response = requests.post(api_url, json=payload)
-        
         response.raise_for_status()
-        
         response_data = response.json()
-        
         public_url = response_data.get("public_url")
         if not public_url:
             raise ValueError("Public URL not found in the API response.")
-        
         return public_url
     except requests.exceptions.RequestException as e:
         raise Exception(f"Error occurred while calling the logo API: {e}")
@@ -262,13 +419,15 @@ def integrate_logo(base_image_url: str, logo_url: str, position: str = "top-righ
 
 st.set_page_config( page_title="AdCraft", page_icon="favfav.jpg",layout="wide")
 st.title("AdCraft")
-tab1, tab2, tab3, tab4=st.tabs(["Creative Generation - Inpainting","Creative Generation - Outpainting", "Edit Creative", "Modify the Creative with AI"])
+tab1, tab2, tab3, tab4, tab5=st.tabs(["Inpainter 🖼️🖌️","Outpainter 🎨🖌️","Google Trends", "Edit Creative", "Modify the Creative with AI"])
 
 st.sidebar.image("adcraft.jpeg", use_container_width=True)
 st.sidebar.header("Input Details")
 logo_url = st.sidebar.text_input("Logo URL*", "https://images.seeklogo.com/logo-png/35/1/nykaa-logo-png_seeklogo-358073.png?v=1957301131966779968")
 st.session_state["logo_url_op"]=logo_url
 product_image_url = st.sidebar.text_input("Product Image URL*", "https://erbaturglass.com/asset/resized/urunler/serumbottle/50ml/w_50ml3_m.jpg")
+repapi=st.sidebar.text_input("Provide your Replicate API Token")
+os.environ["REPLICATE_API_TOKEN"] = repapi
 st.session_state["product_url_op"]=product_image_url
 st.sidebar.write("*Note:* Please Include both Logo and Image URLs ")
 st.sidebar.write("*Note:* Default URLs are set to Nykaa Logo and Generic Face Serum Product Image ")
@@ -286,6 +445,8 @@ st.sidebar.write("Made to Win by Team RAG2riches")
 with tab1:
 
     product_name = st.text_input("Product Name", "GlowWell Skin Serum")
+    words_ip = product_name.split()
+    query_ip = " ".join(words_ip[1:]) 
     tagline = st.text_input("Tagline", "Radiance Redefined.")
     cta_text = st.text_input("Call-to-Action Text", "Shop Now")
     aspect_ratio = st.selectbox(
@@ -310,15 +471,13 @@ with tab1:
     if aspect_ratio:
         width, height = aspect_ratio_dict[aspect_ratio]
 
-    st.subheader("Brand Palette (Pick up to 5 colors)")
+    st.write("Brand Palette")
     col1, col2, col3, col4, col5 = st.columns(5)
 
     brand_palette = [
         col1.color_picker("Color 1", "#FFFFFF"),
         col2.color_picker("Color 2", "#FFFFFF"),
         col3.color_picker("Color 3", "#FFFFFF"),
-        col4.color_picker("Color 4", "#FFFFFF"),
-        col5.color_picker("Color 5", "#FFFFFF")
     ]
     approx_colors_with_hex = get_approx_color_name(brand_palette)
     color_description = ", ".join([f"{name}" for name, _ in approx_colors_with_hex])
@@ -488,6 +647,7 @@ with tab1:
                                             st.error("Error: No URL found in the logo API response.")
                                     except Exception as e:
                                         st.error(f"Error during logo integration: {str(e)}")
+                                    st.session_state["qipa"] = query_ip
                             else:
                                 st.error("Error in generating inpainted image")
                         else:
@@ -499,6 +659,8 @@ with tab1:
 with tab2:
 
     product_name_op = st.text_input("Name of the Product", "GlowWell Skin Serum")
+    words_op = product_name.split()
+    query_op = " ".join(words_op[1:]) 
     tagline_op = st.text_input("Product Tagline", "Radiance Redefined.")
     cta_text_op = st.text_input("Call to Action Text", "Shop Now")
     col1,col2=st.columns(2)
@@ -532,11 +694,22 @@ with tab2:
         final_logo_url= integrate_logo(response_op.url, logo_url_op, logo_position_op, scale_factor = 0.2)
         st.image(final_logo_url, caption="Final Creative With Logo", width=800)
         st.session_state["final_url"] = final_logo_url
-
-
+        st.session_state["qopa"]=query_op
 
 
 with tab3:
+    if "qipa" in st.session_state and st.session_state["qipa"]:
+        q=st.session_state["qipa"]
+        trends_fetcher(q)
+    
+    if "qopa" in st.session_state and st.session_state["qopa"]:
+        q=st.session_state["qopa"]
+        trends_fetcher(q)
+    else:
+        st.warning("No creative is generated in the session. Generate a creative to check trends")
+
+
+with tab4:
     st.header("Creative Editor")
     uploaded_file = st.file_uploader("Upload an Creative", type=["jpg", "jpeg", "png"])
     image_url = st.text_input("Or, provide an image URL")
@@ -597,7 +770,7 @@ with tab3:
                 mime="image/png"
             )
 
-with tab4:
+with tab5:
     if "final_url" in st.session_state and st.session_state["final_url"]:
         image_url = st.session_state["final_url"]
 
@@ -630,4 +803,4 @@ with tab4:
             except Exception as e:
                 st.error(f"An error occurred: {e}")
     else:
-        st.warning("No image URL found in session state. Please upload an image in the previous tab.")
+        st.warning("No image URL found in session. Please generate a creative for the modifications.")
