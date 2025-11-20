@@ -2,7 +2,7 @@
 
 This project enables users to generate customized Ad creatives by leveraging an API for creative generation, Google Cloud Storage for storing generated images, and multiple models. It automates the process of generating ad creatives by combining uploaded images, masks, and logos seamlessly.
 
-Team RAG2riches
+
 ---
 ![adcraft](https://github.com/user-attachments/assets/f22c192e-92f8-44cf-a2d1-2213b943f79f)
 
